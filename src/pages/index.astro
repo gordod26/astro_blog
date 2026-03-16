@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog"))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+---
+
+<BaseLayout title="David" description="Personal site and blog.">
+  <div class="bio">
+    <h1>Hey, I'm David.</h1>
+    <p>
+      I'm a software developer who writes about code, ideas, and whatever else
+      catches my attention. Welcome to my corner of the internet.
+    </p>
+  </div>
+
+  {
+    posts.length > 0 && (
+      <section>
+        <p class="section-heading">Recent Posts</p>
+        <ul class="post-list">
+          {posts.map((post) => (
+            <li>
+              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+              <span class="post-date">{formatDate(post.data.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>
